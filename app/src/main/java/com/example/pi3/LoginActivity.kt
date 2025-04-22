@@ -33,5 +33,11 @@ class LoginActivity : AppCompatActivity() {
                 // Aqui você adicionaria a lógica de autenticação real
             }
         }
+
+        val tvDebugRegistrar = findViewById<TextView>(R.id.tvDebugRegistrar)
+        tvDebugRegistrar.setOnClickListener {
+            val intent = Intent(this, IncidentRegistrationActivity::class.java)
+            startActivity(intent)
+        }
     }
 }

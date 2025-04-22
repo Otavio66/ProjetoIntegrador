@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/white"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:importantForAccessibility="no">
+
+    <LinearLayout
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:layout_marginTop="32dp"
+        android:layout_marginBottom="32dp"
+        android:background="@drawable/rounded_bg"
+        android:elevation="4dp"
+        android:orientation="vertical"
+        android:padding="20dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:paddingBottom="16dp"
+            android:text="Registro de Incidente"
+            android:textColor="#000000"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <!-- Nome do Problema -->
+        <EditText
+            android:id="@+id/etNomeProblema"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="12dp"
+            android:background="@drawable/rounded_input"
+            android:hint="Nome do problema"
+            android:minHeight="48dp"
+            android:padding="14dp"
+            android:textColorHint="#757575" />
+
+        <!-- Risco -->
+        <Spinner
+            android:id="@+id/spinnerRisco"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginBottom="12dp"
+            android:background="@drawable/rounded_input"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"
+            android:spinnerMode="dropdown" />
+
+        <!-- Localização -->
+        <EditText
+            android:id="@+id/etLocalizacao"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="12dp"
+            android:background="@drawable/rounded_input"
+            android:hint="Localização"
+            android:minHeight="48dp"
+            android:padding="14dp"
+            android:textColorHint="#757575" />
+
+        <!-- Categoria -->
+        <Spinner
+            android:id="@+id/spinnerCategoria"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginBottom="12dp"
+            android:background="@drawable/rounded_input"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"
+            android:spinnerMode="dropdown" />
+
+        <!-- Descrição -->
+        <EditText
+            android:id="@+id/etDescricao"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:layout_marginBottom="12dp"
+            android:background="@drawable/rounded_input"
+            android:gravity="top"
+            android:hint="Descrição detalhada"
+            android:inputType="textMultiLine"
+            android:padding="14dp"
+            android:textColorHint="#757575" />
+
+        <!-- Upload de Imagem -->
+        <Button
+            android:id="@+id/btnEscolherArquivo"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginBottom="16dp"
+            android:background="@drawable/rounded_button"
+            android:text="Anexar Foto"
+            android:textColor="#000000" />
+
+        <!-- Botão de Envio -->
+        <Button
+            android:id="@+id/btnEnviar"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:background="@drawable/rounded_button"
+            android:text="Registrar Incidente"
+            android:textColor="#000000" />
+
+    </LinearLayout>
+</LinearLayout>

@@ -1,5 +1,6 @@
 <resources>
-    <string name="app_name">SeuNomeDoApp</string> <string name="login">Login</string>
+    <string name="app_name">PI3 - Controle de Riscos</string>
+    <string name="login">Login</string>
     <string name="identificacao">Identificação</string>
     <string name="senha">Senha</string>
     <string name="esqueci_minha_senha">Esqueci minha senha</string>
@@ -10,5 +11,18 @@
     <string name="confirmar_senha">Confirmar Senha</string>
     <string name="cadastro"> Cadastro </string>
     <string name="voltar_login">Voltar para o Login</string>
+
+    <string-array name="niveis_risco">
+        <item>Baixo</item>
+        <item>Médio</item>
+        <item>Alto</item>
+    </string-array>
+
+    <string-array name="categorias">
+        <item>Risco Elétrico</item>
+        <item>Risco de Queda</item>
+        <item>Risco Estrutural</item>
+        <item>Outros</item>
+    </string-array>
 
 </resources>

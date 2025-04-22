@@ -1,3 +1,14 @@
 <resources>
-    <string name="app_name">PI3</string>
+    <string name="app_name">SeuNomeDoApp</string> <string name="login">Login</string>
+    <string name="identificacao">Identificação</string>
+    <string name="senha">Senha</string>
+    <string name="esqueci_minha_senha">Esqueci minha senha</string>
+    <string name="nao_tem_conta_cadastre_se">Não tem conta? Cadastre-se</string>
+    <string name="entrar">Entrar</string>
+    <string name="cadastrar">Cadastrar</string> <string name="nome">Nome</string>
+    <string name="email">Email</string>
+    <string name="confirmar_senha">Confirmar Senha</string>
+    <string name="cadastro"> Cadastro </string>
+    <string name="voltar_login">Voltar para o Login</string>
+
 </resources>

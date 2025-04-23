@@ -7,6 +7,19 @@
     android:orientation="vertical"
     android:importantForAccessibility="no">
 
+    <TextView
+        android:id="@+id/tvVoltar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Debug voltar para tela de login"
+        android:textColor="@android:color/holo_blue_dark"
+        android:textSize="16sp"
+        android:layout_marginTop="16dp"
+        android:layout_marginLeft="16sp"
+        android:layout_gravity="start|top"
+        android:clickable="true"
+        android:focusable="true" />
+
     <LinearLayout
         android:layout_width="300dp"
         android:layout_height="wrap_content"
@@ -17,6 +30,7 @@
         android:elevation="4dp"
         android:orientation="vertical"
         android:padding="20dp">
+
 
         <TextView
             android:layout_width="wrap_content"
@@ -29,6 +43,14 @@
             android:textStyle="bold" />
 
         <!-- Nome do Problema -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Nome do Problema"
+            android:textColor="#000000"
+            android:textSize="14sp"
+            android:layout_marginBottom="4dp" />
+
         <EditText
             android:id="@+id/etNomeProblema"
             android:layout_width="match_parent"
@@ -41,17 +63,32 @@
             android:textColorHint="#757575" />
 
         <!-- Risco -->
-        <Spinner
-            android:id="@+id/spinnerRisco"
+        <TextView
             android:layout_width="match_parent"
-            android:layout_height="48dp"
+            android:layout_height="wrap_content"
+            android:text="Avaliação de Risco"
+            android:textColor="#000000"
+            android:textSize="14sp"
+            android:layout_marginBottom="4dp" />
+
+        <RatingBar
+            android:id="@+id/ratingRisco"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:numStars="5"
+            android:stepSize="1.0"
             android:layout_marginBottom="12dp"
-            android:background="@drawable/rounded_input"
-            android:paddingStart="10dp"
-            android:paddingEnd="10dp"
-            android:spinnerMode="dropdown" />
+            android:layout_gravity="center_horizontal" />
 
         <!-- Localização -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Localização"
+            android:textColor="#000000"
+            android:textSize="14sp"
+            android:layout_marginBottom="4dp" />
+
         <EditText
             android:id="@+id/etLocalizacao"
             android:layout_width="match_parent"
@@ -64,6 +101,14 @@
             android:textColorHint="#757575" />
 
         <!-- Categoria -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Categoria"
+            android:textColor="#000000"
+            android:textSize="14sp"
+            android:layout_marginBottom="4dp" />
+
         <Spinner
             android:id="@+id/spinnerCategoria"
             android:layout_width="match_parent"
@@ -75,6 +120,14 @@
             android:spinnerMode="dropdown" />
 
         <!-- Descrição -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Descrição Detalhada"
+            android:textColor="#000000"
+            android:textSize="14sp"
+            android:layout_marginBottom="4dp" />
+
         <EditText
             android:id="@+id/etDescricao"
             android:layout_width="match_parent"

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="categorias">
+        <item>Risco Elétrico</item>
+        <item>Risco de Queda</item>
+        <item>Risco Estrutural</item>
+        <item>Outros</item>
+    </string-array>
+</resources>

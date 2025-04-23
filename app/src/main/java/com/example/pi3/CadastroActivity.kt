@@ -5,18 +5,31 @@ import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
+import com.google.firebase.firestore.FirebaseFirestore
+import android.util.Log
 
 class CadastroActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_cadastro)
 
+        val etNomeCadastro = findViewById<EditText>(R.id.etNomeCadastro)
+        val etEmailCadastro = findViewById<EditText>(R.id.etEmailCadastro)
+        val etSenhaCadastro = findViewById<EditText>(R.id.etSenhaCadastro)
+        val etConfirmarSenhaCadastro = findViewById<EditText>(R.id.etConfirmarSenhaCadastro)
         val btnCadastrar = findViewById<Button>(R.id.btnCadastrar)
+        val btnVoltarLogin = findViewById<Button>(R.id.btnVoltarLogin)
+
+        val db = FirebaseFirestore.getInstance()
+        val COLLECTION_USUARIOS = "usuarios_cadastro" // Nome da sua coleção no Firestore
+
         btnCadastrar.setOnClickListener {
-            val nome = findViewById<EditText>(R.id.etNomeCadastro).text.toString()
-            val email = findViewById<EditText>(R.id.etEmailCadastro).text.toString()
-            val senha = findViewById<EditText>(R.id.etSenhaCadastro).text.toString()
-            val confirmarSenha = findViewById<EditText>(R.id.etConfirmarSenhaCadastro).text.toString()
+            Log.d("CadastroClick", "Botão Cadastrar clicado!")
+
+            val nome = etNomeCadastro.text.toString()
+            val email = etEmailCadastro.text.toString()
+            val senha = etSenhaCadastro.text.toString()
+            val confirmarSenha = etConfirmarSenhaCadastro.text.toString()
 
             if (nome.isEmpty() || email.isEmpty() || senha.isEmpty() || confirmarSenha.isEmpty()) {
                 Toast.makeText(this, "Preencha todos os campos!", Toast.LENGTH_SHORT).show()
@@ -28,14 +41,31 @@ class CadastroActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            Toast.makeText(this, "Cadastro realizado!", Toast.LENGTH_SHORT).show()
-            finish() // Volta para a tela de login
+            Log.d("CadastroFirebase", "Iniciando envio para o Firebase...")
+
+            val userData = hashMapOf(
+                "nome" to nome,
+                "email" to email
+                // NÃO envie a senha diretamente para o Firestore por segurança!
+            )
+
+            db.collection(COLLECTION_USUARIOS)
+                .add(userData)
+                .addOnSuccessListener { documentReference ->
+                    Log.d("CadastroFirebase", "Sucesso ao enviar. ID: ${documentReference.id}")
+                    Toast.makeText(this, "Cadastro realizado com sucesso!", Toast.LENGTH_SHORT).show()
+                    finish()
+                }
+                .addOnFailureListener { e ->
+                    Log.e("CadastroFirebase", "Falha ao enviar: ${e.message}", e)
+                    Toast.makeText(this, "Erro ao cadastrar.", Toast.LENGTH_SHORT).show()
+                }
+
+            Log.d("CadastroFirebase", "Fim do bloco de envio.")
         }
 
-        // Botão de Voltar para o Login
-        val btnVoltarLogin = findViewById<Button>(R.id.btnVoltarLogin)
         btnVoltarLogin.setOnClickListener {
-            finish() // Simplesmente finaliza a Activity de Cadastro e volta para a anterior (LoginActivity)
+            finish()
         }
     }
 }

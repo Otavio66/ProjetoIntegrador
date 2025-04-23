@@ -38,6 +38,12 @@ class LoginActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
+        val tvDebug = findViewById<TextView>(R.id.tvDebugRegistrar)
+        tvDebug.setOnClickListener{
+            val intent = Intent(this, IncidentRegistrationActivity::class.java)
+            startActivity(intent)
+        }
+
         // Botão de Login
         val btnLogin = findViewById<Button>(R.id.btnEntrar)
         btnLogin.setOnClickListener {

@@ -29,44 +29,50 @@
             android:text="@string/login"
             android:textSize="18sp"
             android:textStyle="bold"
-            android:textColor="#000000"/> <EditText
-        android:id="@+id/etIdentificacao"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="12dp"
-        android:background="@drawable/rounded_input"
-        android:hint="@string/identificacao"
-        android:inputType="textPersonName"
-        android:autofillHints="username"
-        android:paddingTop="14dp"
-        android:paddingBottom="14dp"
-        android:paddingStart="10dp"
-        android:paddingEnd="10dp"
-        android:minHeight="48dp"
-        android:textColorHint="#757575" /> <EditText
-        android:id="@+id/etSenha"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:background="@drawable/rounded_input"
-        android:hint="@string/senha"
-        android:inputType="textPassword"
-        android:autofillHints="password"
-        android:paddingTop="14dp"
-        android:paddingBottom="14dp"
-        android:paddingStart="10dp"
-        android:paddingEnd="10dp"
-        android:minHeight="48dp"
-        android:textColorHint="#757575" /> <TextView
-        android:id="@+id/tvEsqueciSenha"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="start"
-        android:layout_marginBottom="16dp"
-        android:text="@string/esqueci_minha_senha"
-        android:textColor="#000000"
-        android:textSize="12sp"
-        android:textStyle="bold" />
+            android:textColor="#000000"/>
+
+        <EditText
+            android:id="@+id/etIdentificacao"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="12dp"
+            android:background="@drawable/rounded_input"
+            android:hint="@string/identificacao"
+            android:inputType="textPersonName"
+            android:autofillHints="username"
+            android:paddingTop="14dp"
+            android:paddingBottom="14dp"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"
+            android:minHeight="48dp"
+            android:textColorHint="#757575" />
+
+        <EditText
+            android:id="@+id/etSenha"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:background="@drawable/rounded_input"
+            android:hint="@string/senha"
+            android:inputType="textPassword"
+            android:autofillHints="password"
+            android:paddingTop="14dp"
+            android:paddingBottom="14dp"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"
+            android:minHeight="48dp"
+            android:textColorHint="#757575" />
+
+        <TextView
+            android:id="@+id/tvEsqueciSenha"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:layout_marginBottom="0dp"
+            android:text="@string/esqueci_minha_senha"
+            android:textColor="#000000"
+            android:textSize="12sp"
+            android:textStyle="bold" />
 
         <TextView
             android:id="@+id/tvCadastrar"
@@ -82,6 +88,7 @@
             android:paddingTop="12dp"
             android:paddingEnd="20dp"
             android:paddingBottom="12dp"
+            android:textColor="@android:color/holo_blue_dark"
             android:text="@string/nao_tem_conta_cadastre_se"
             android:textSize="14sp"
             android:textStyle="bold" />
@@ -95,9 +102,8 @@
             android:textColor="#000000"
             android:minHeight="48dp"/>
 
-
-
     </LinearLayout>
+
     <TextView
         android:id="@+id/tvDebugRegistrar"
         android:layout_width="wrap_content"
@@ -109,4 +115,5 @@
         android:textStyle="bold"
         android:clickable="true"
         android:focusable="true"/>
+
 </LinearLayout>

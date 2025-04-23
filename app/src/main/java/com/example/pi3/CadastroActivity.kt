@@ -4,9 +4,11 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
+import android.widget.TextView
 import android.widget.Toast
 import com.google.firebase.firestore.FirebaseFirestore
 import android.util.Log
+import android.content.Intent
 
 class CadastroActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -18,11 +20,17 @@ class CadastroActivity : AppCompatActivity() {
         val etSenhaCadastro = findViewById<EditText>(R.id.etSenhaCadastro)
         val etConfirmarSenhaCadastro = findViewById<EditText>(R.id.etConfirmarSenhaCadastro)
         val btnCadastrar = findViewById<Button>(R.id.btnCadastrar)
-        val btnVoltarLogin = findViewById<Button>(R.id.btnVoltarLogin)
+        val tvVoltarLogin = findViewById<TextView>(R.id.tvVoltarLogin)
+
+        tvVoltarLogin.setOnClickListener {
+            val intent = Intent(this, LoginActivity::class.java)
+            startActivity(intent)
+        }
 
         val db = FirebaseFirestore.getInstance()
         val COLLECTION_USUARIOS = "usuarios_cadastro" // Nome da sua coleção no Firestore
 
+        // Lógica do botão de cadastro
         btnCadastrar.setOnClickListener {
             Log.d("CadastroClick", "Botão Cadastrar clicado!")
 
@@ -54,7 +62,7 @@ class CadastroActivity : AppCompatActivity() {
                 .addOnSuccessListener { documentReference ->
                     Log.d("CadastroFirebase", "Sucesso ao enviar. ID: ${documentReference.id}")
                     Toast.makeText(this, "Cadastro realizado com sucesso!", Toast.LENGTH_SHORT).show()
-                    finish()
+                    finish() // Fecha a tela de cadastro e retorna à tela anterior
                 }
                 .addOnFailureListener { e ->
                     Log.e("CadastroFirebase", "Falha ao enviar: ${e.message}", e)
@@ -62,10 +70,6 @@ class CadastroActivity : AppCompatActivity() {
                 }
 
             Log.d("CadastroFirebase", "Fim do bloco de envio.")
-        }
-
-        btnVoltarLogin.setOnClickListener {
-            finish()
         }
     }
 }

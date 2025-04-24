@@ -14,14 +14,9 @@ class InicialActivity : AppCompatActivity() {
         setContentView(R.layout.activity_inicial) //
 
 
-        val backButton = findViewById<ImageView>(R.id.backButton)
         val addRegistroButton = findViewById<Button>(R.id.addRegistroButton)
         val registroListView = findViewById<ListView>(R.id.registroListView)
 
-
-        backButton.setOnClickListener {
-            finish()
-        }
 
         addRegistroButton.setOnClickListener {
             val intent = Intent(this, IncidentRegistrationActivity::class.java)

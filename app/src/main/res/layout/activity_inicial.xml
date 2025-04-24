@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
@@ -20,17 +19,20 @@
         android:layout_weight="1"
         android:orientation="vertical"
         android:padding="8dp"
-        android:background="#EFEFEF"
+        android:background="@drawable/rounded_bg_gray"
         android:elevation="4dp"
         android:layout_marginTop="16dp"
-        android:clipToPadding="false">
+        android:clipToPadding="false"
+        >
+
 
         <ListView
             android:id="@+id/registroListView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:dividerHeight="8dp"
-            android:padding="8dp" />
+            android:padding="8dp"
+            android:background="@drawable/rounded_bg"/>
     </LinearLayout>
 
     <Button
@@ -40,5 +42,6 @@
         android:text="Adicionar um novo registro"
         android:layout_marginTop="16dp"
         android:backgroundTint="#D3D3D3"
-        android:textColor="#000000"/>
+        android:textColor="#000000"
+        />
 </LinearLayout>

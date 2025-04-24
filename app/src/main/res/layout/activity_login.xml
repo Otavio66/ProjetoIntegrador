@@ -110,7 +110,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="16dp"
-        android:text="Debug RegistrarIncidente"
+        android:text="Debug MainActivity"
         android:textColor="#FF0000"
         android:textStyle="bold"
         android:clickable="true"

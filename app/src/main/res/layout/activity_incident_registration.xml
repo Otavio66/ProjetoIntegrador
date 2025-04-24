@@ -7,18 +7,25 @@
     android:orientation="vertical"
     android:importantForAccessibility="no">
 
+
     <TextView
-        android:id="@+id/tvVoltar"
+        android:id="@+id/debugLogin"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Debug voltar para tela de login"
-        android:textColor="@android:color/holo_blue_dark"
-        android:textSize="16sp"
-        android:layout_marginTop="16dp"
-        android:layout_marginLeft="16sp"
-        android:layout_gravity="start|top"
         android:clickable="true"
-        android:focusable="true" />
+        android:orientation="horizontal"
+        android:text="Debug Login"
+        android:textColor="@android:color/holo_blue_dark" />
+
+    <TextView
+        android:id="@+id/debugMain"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+
+        android:clickable="true"
+        android:orientation="horizontal"
+        android:text="Debug Main"
+        android:textColor="@android:color/holo_blue_dark" />
 
     <LinearLayout
         android:layout_width="300dp"
@@ -77,7 +84,7 @@
             android:layout_height="wrap_content"
             android:numStars="5"
             android:stepSize="1.0"
-            android:layout_marginBottom="12dp"
+            android:layout_marginBottom="-10dp"
             android:layout_gravity="center_horizontal" />
 
         <!-- Localização -->

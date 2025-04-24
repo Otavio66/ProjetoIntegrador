@@ -11,16 +11,10 @@ class IncidentRegistrationActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_incident_registration)
 
+        // Restante do código original
         val btnEnviar = findViewById<Button>(R.id.btnEnviar)
         val ratingRisco = findViewById<RatingBar>(R.id.ratingRisco)
         val spinnerCategoria = findViewById<Spinner>(R.id.spinnerCategoria)
-
-        val tvVoltar = findViewById<TextView>(R.id.tvVoltar)
-        tvVoltar.setOnClickListener {
-            val intent = Intent(this, LoginActivity::class.java)
-            startActivity(intent)
-        }
-
 
         ArrayAdapter.createFromResource(
             this,
@@ -29,6 +23,19 @@ class IncidentRegistrationActivity : AppCompatActivity() {
         ).also { adapter ->
             adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
             spinnerCategoria.adapter = adapter
+        }
+
+        // Botões de debug
+        val debugLogin = findViewById<TextView>(R.id.debugLogin) // !! APAGAR NO PRODUTO FINAL
+        val debugMain = findViewById<TextView>(R.id.debugMain) // !! DEPOIS ALTERAR O NOME PARA VOLTAR
+
+        // Configuração dos botões de debug
+        debugLogin.setOnClickListener {
+            startActivity(Intent(this, LoginActivity::class.java))
+        }
+
+        debugMain.setOnClickListener {
+            startActivity(Intent(this, InicialActivity::class.java))
         }
 
         btnEnviar.setOnClickListener {

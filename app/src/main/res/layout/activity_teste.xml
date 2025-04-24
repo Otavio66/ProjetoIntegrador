@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <ImageView
+        android:id="@+id/incident_image"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:src="@drawable/ic_launcher_background"
+        android:contentDescription="Imagem do incidente"
+        android:scaleType="centerCrop"/>
+
+    <TextView
+        android:id="@+id/incident_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Título do incidente"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:paddingTop="8dp"/>
+
+    <TextView
+        android:id="@+id/incident_location"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Localização: Prédio X - Sala 108, segundo andar"
+        android:paddingTop="4dp"/>
+
+    <TextView
+        android:id="@+id/incident_category"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Categoria: Risco elétrico"
+        android:paddingTop="4dp"/>
+
+    <TextView
+        android:id="@+id/incident_status"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Status: Aberto"
+        android:paddingTop="4dp"/>
+
+    <TextView
+        android:id="@+id/incident_description"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Descrição: Uma parede da sala tem fiação elétrica exposta..."
+        android:paddingTop="8dp"/>
+</LinearLayout>

@@ -6,14 +6,19 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import android.util.Log
 import android.content.Intent
 
 class CadastroActivity : AppCompatActivity() {
+    private lateinit var auth: FirebaseAuth  // FirebaseAuth para autenticaçao
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_cadastro)
+
+        auth = FirebaseAuth.getInstance()  // inicializa o Firebase authentication
 
         val etNomeCadastro = findViewById<EditText>(R.id.etNomeCadastro)
         val etEmailCadastro = findViewById<EditText>(R.id.etEmailCadastro)
@@ -28,7 +33,7 @@ class CadastroActivity : AppCompatActivity() {
         }
 
         val db = FirebaseFirestore.getInstance()
-        val COLLECTION_USUARIOS = "usuarios_cadastro" // Nome da sua coleção no Firestore
+        val COLLECTION_USUARIOS = "usuarios_cadastro" // nome da coleçap no Firestore
 
         // Lógica do botão de cadastro
         btnCadastrar.setOnClickListener {
@@ -49,27 +54,63 @@ class CadastroActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            Log.d("CadastroFirebase", "Iniciando envio para o Firebase...")
+            // verifica se a senha tem 6 caractere
+            if (senha.length < 6) {
+                Toast.makeText(this, "A senha deve ter pelo menos 6 caracteres.", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
 
-            val userData = hashMapOf(
-                "nome" to nome,
-                "email" to email
-                // NÃO envie a senha diretamente para o Firestore por segurança!
-            )
+            // verifica se o email já esta sendo usado
+            auth.fetchSignInMethodsForEmail(email)
+                .addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        val signInMethods = task.result?.signInMethods
+                        if (signInMethods != null && signInMethods.isNotEmpty()) {
+                            // Se o email esta sendo usado
+                            Toast.makeText(this, "Este email já está em uso. Tente outro!", Toast.LENGTH_SHORT).show()
+                        } else {
 
-            db.collection(COLLECTION_USUARIOS)
-                .add(userData)
-                .addOnSuccessListener { documentReference ->
-                    Log.d("CadastroFirebase", "Sucesso ao enviar. ID: ${documentReference.id}")
-                    Toast.makeText(this, "Cadastro realizado com sucesso!", Toast.LENGTH_SHORT).show()
-                    finish() // Fecha a tela de cadastro e retorna à tela anterior
+                            Log.d("CadastroFirebase", "Iniciando cadastro no Firebase Authentication...")
+
+                            // Cria user na firebase
+                            auth.createUserWithEmailAndPassword(email, senha)
+                                .addOnCompleteListener(this) { task ->
+                                    if (task.isSuccessful) {
+                                        Log.d("CadastroFirebase", "Usuário criado com sucesso!")
+                                        val user = auth.currentUser
+
+                                        // armazena nome e email
+                                        val userData = hashMapOf(
+                                            "nome" to nome,
+                                            "email" to email
+                                        )
+
+                                        db.collection(COLLECTION_USUARIOS)
+                                            .document(user?.uid ?: "")
+                                            .set(userData)
+                                            .addOnSuccessListener {
+                                                Log.d("CadastroFirebase", "Dados do usuário armazenados no Firestore")
+                                                Toast.makeText(this, "Cadastro realizado com sucesso!", Toast.LENGTH_SHORT).show()
+
+                                                val intent = Intent(this, LoginActivity::class.java)
+                                                startActivity(intent)
+                                                finish()
+                                            }
+                                            .addOnFailureListener { e ->
+                                                Log.e("CadastroFirebase", "Erro ao salvar dados no Firestore: ${e.message}", e)
+                                                Toast.makeText(this, "Erro ao cadastrar no Firestore", Toast.LENGTH_SHORT).show()
+                                            }
+                                    } else {
+                                        Log.e("CadastroFirebase", "Erro ao criar usuário: ${task.exception?.message}")
+                                        Toast.makeText(this, "Erro ao cadastrar usuário. Tente novamente.", Toast.LENGTH_SHORT).show()
+                                    }
+                                }
+                        }
+                    } else {
+                        Log.e("CadastroFirebase", "Erro ao verificar email: ${task.exception?.message}")
+                        Toast.makeText(this, "Erro ao verificar email. Tente novamente.", Toast.LENGTH_SHORT).show()
+                    }
                 }
-                .addOnFailureListener { e ->
-                    Log.e("CadastroFirebase", "Falha ao enviar: ${e.message}", e)
-                    Toast.makeText(this, "Erro ao cadastrar.", Toast.LENGTH_SHORT).show()
-                }
-
-            Log.d("CadastroFirebase", "Fim do bloco de envio.")
         }
     }
 }

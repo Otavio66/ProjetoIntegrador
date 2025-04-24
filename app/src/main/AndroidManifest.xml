@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" /> <!-- Remova se não estiver usando imagens -->
 
     <application
         android:allowBackup="true"
@@ -15,6 +15,7 @@
         android:theme="@style/Theme.PI3"
         tools:targetApi="31">
 
+        <!-- LoginActivity como a tela inicial do app -->
         <activity
             android:name=".LoginActivity"
             android:exported="true">
@@ -24,13 +25,20 @@
             </intent-filter>
         </activity>
 
+        <!-- CadastroActivity (não é exportada) -->
         <activity
             android:name=".CadastroActivity"
             android:exported="false"/>
 
+        <!-- IncidentRegistrationActivity (não é exportada) -->
         <activity
             android:name=".IncidentRegistrationActivity"
             android:exported="false"/>
+
+        <!-- InicialActivity (adicionada para que seja redirecionado após login) -->
+        <activity
+            android:name=".InicialActivity"
+            android:exported="true" /> <!-- Certifique-se de que a InicialActivity está registrada -->
 
     </application>
 

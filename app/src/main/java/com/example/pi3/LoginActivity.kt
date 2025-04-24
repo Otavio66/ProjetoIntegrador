@@ -7,15 +7,22 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import android.util.Log
 
 class LoginActivity : AppCompatActivity() {
+
+    private lateinit var auth: FirebaseAuth  // FirebaseAuth para autenticação
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login) // Vincula ao XML da tela
 
-        // Inicialize o Firestore para o teste (forma mais explícita)
+        // Inicializando o Firebase Authentication
+        auth = FirebaseAuth.getInstance()
+
+        // Testando a integração com o Firestore
         val db: FirebaseFirestore = FirebaseFirestore.getInstance()
         val testeData = hashMapOf(
             "teste_login_activity" to "Integração Firebase OK!",
@@ -31,31 +38,48 @@ class LoginActivity : AppCompatActivity() {
                 Log.e("FirebaseTeste", "Teste da LoginActivity: Erro ao adicionar documento: ${e.message}", e)
             }
 
-        // Botão para ir para Cadastro
+        // Botao Cadastro
         val tvCadastrar = findViewById<TextView>(R.id.tvCadastrar)
         tvCadastrar.setOnClickListener {
             val intent = Intent(this, CadastroActivity::class.java)
             startActivity(intent)
         }
 
-        val tvDebug = findViewById<TextView>(R.id.tvDebugRegistrar)
-        tvDebug.setOnClickListener{
-            val intent = Intent(this, IncidentRegistrationActivity::class.java)
-            startActivity(intent)
-        }
-
-        // Botão de Login
+        // Botao login
         val btnLogin = findViewById<Button>(R.id.btnEntrar)
         btnLogin.setOnClickListener {
-            val identificacao = findViewById<EditText>(R.id.etIdentificacao).text.toString()
+            val email = findViewById<EditText>(R.id.etIdentificacao).text.toString()
             val senha = findViewById<EditText>(R.id.etSenha).text.toString()
 
-            if (identificacao.isEmpty() || senha.isEmpty()) {
+            if (email.isEmpty() || senha.isEmpty()) {
                 Toast.makeText(this, "Preencha todos os campos!", Toast.LENGTH_SHORT).show()
             } else {
-                Toast.makeText(this, "Login realizado!", Toast.LENGTH_SHORT).show()
-                // Aqui você adicionaria a lógica de autenticação real
+                // Tenta fazer login
+                auth.signInWithEmailAndPassword(email, senha)
+                    .addOnCompleteListener(this) { task ->
+                        if (task.isSuccessful) {
+                            // Login realizado
+                            val user = auth.currentUser
+                            Toast.makeText(this, "Login realizado com sucesso!", Toast.LENGTH_SHORT).show()
+
+                            // Redireciona para a tela inicial se o logi estiver funcionado
+                            val intent = Intent(this, InicialActivity::class.java)  // Direciona para InicialActivity
+                            startActivity(intent)
+                            finish()  // Fecha a tela de login
+                        } else {
+                            // se o login falhar
+                            Log.e("FirebaseLogin", "Erro no login: ${task.exception?.message}")
+                            Toast.makeText(this, "Falha no login. Verifique seu email e senha.", Toast.LENGTH_SHORT).show()
+                        }
+                    }
             }
+        }
+
+        // Debug Button
+        val tvDebug = findViewById<TextView>(R.id.tvDebugRegistrar)
+        tvDebug.setOnClickListener {
+            val intent = Intent(this, InicialActivity::class.java) // Redireciona para a InicialActivity
+            startActivity(intent)
         }
     }
 }

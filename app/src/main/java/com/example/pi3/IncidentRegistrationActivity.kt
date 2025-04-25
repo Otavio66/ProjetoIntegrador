@@ -1,20 +1,44 @@
 package com.example.pi3
 
+import android.content.Intent
 import android.os.Bundle
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
-import android.content.Intent
+import android.net.Uri
+import androidx.activity.result.contract.ActivityResultContracts
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.StorageReference
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
+import com.google.android.gms.tasks.OnSuccessListener
+import android.content.pm.PackageManager
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import java.util.UUID
+import android.util.Log
 
 class IncidentRegistrationActivity : AppCompatActivity() {
+
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
+    private lateinit var imageUri: Uri
+    private val db = FirebaseFirestore.getInstance()
+    private val storage = FirebaseStorage.getInstance()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_incident_registration)
 
-        // Restante do código original
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
+
         val btnEnviar = findViewById<Button>(R.id.btnEnviar)
+        val etLocalizacao = findViewById<EditText>(R.id.etLocalizacao)
         val ratingRisco = findViewById<RatingBar>(R.id.ratingRisco)
         val spinnerCategoria = findViewById<Spinner>(R.id.spinnerCategoria)
+        val btnEscolherImagem = findViewById<Button>(R.id.btnEscolherImagem)
+
+        val debugLogin = findViewById<TextView>(R.id.debugLogin)
+        val debugMain = findViewById<TextView>(R.id.debugMain)
 
         ArrayAdapter.createFromResource(
             this,
@@ -25,11 +49,19 @@ class IncidentRegistrationActivity : AppCompatActivity() {
             spinnerCategoria.adapter = adapter
         }
 
-        // Botões de debug
-        val debugLogin = findViewById<TextView>(R.id.debugLogin) // !! APAGAR NO PRODUTO FINAL
-        val debugMain = findViewById<TextView>(R.id.debugMain) // !! DEPOIS ALTERAR O NOME PARA VOLTAR
+        val pickImage = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
+            if (uri != null) {
+                imageUri = uri
+                Log.d("IncidentRegistration", "Imagem escolhida: $imageUri")
+                val mimeType = contentResolver.getType(uri)
+                Log.d("IncidentRegistration", "Tipo MIME da imagem: $mimeType")
+            }
+        }
 
-        // Configuração dos botões de debug
+        btnEscolherImagem.setOnClickListener {
+            pickImage.launch("image/*")
+        }
+
         debugLogin.setOnClickListener {
             startActivity(Intent(this, LoginActivity::class.java))
         }
@@ -38,33 +70,116 @@ class IncidentRegistrationActivity : AppCompatActivity() {
             startActivity(Intent(this, InicialActivity::class.java))
         }
 
+        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION), 1)
+        } else {
+            getLocation(etLocalizacao)
+        }
+
         btnEnviar.setOnClickListener {
             val nomeProblema = findViewById<EditText>(R.id.etNomeProblema).text.toString()
             val risco = ratingRisco.rating
-            val localizacao = findViewById<EditText>(R.id.etLocalizacao).text.toString()
+            val localizacao = etLocalizacao.text.toString()
             val categoria = spinnerCategoria.selectedItem?.toString() ?: ""
             val descricao = findViewById<EditText>(R.id.etDescricao).text.toString()
 
-            if (spinnerCategoria.selectedItemPosition == 0) {
-                Toast.makeText(this, "Selecione a categoria!", Toast.LENGTH_SHORT).show()
+            if (nomeProblema.isEmpty()) {
+                Toast.makeText(this, "Por favor, insira o nome do problema.", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+            if (risco == 0f) {
+                Toast.makeText(this, "Por favor, avalie o risco do problema.", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+            if (localizacao.isEmpty()) {
+                Toast.makeText(this, "Por favor, insira a localização do risco.", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+            if (categoria == "" || categoria == "Selecione") {
+                Toast.makeText(this, "Por favor, selecione uma categoria.", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+            if (descricao.isEmpty()) {
+                Toast.makeText(this, "Por favor, insira uma descrição do risco.", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
-            if (nomeProblema.isEmpty() || risco == 0f || localizacao.isEmpty() || descricao.isEmpty()) {
-                Toast.makeText(this, "Preencha todos os campos!", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
+            val riscoData = hashMapOf(
+                "nomeProblema" to nomeProblema,
+                "risco" to risco.toInt(),
+                "localizacao" to localizacao,
+                "categoria" to categoria,
+                "descricao" to descricao
+            )
+
+            if (::imageUri.isInitialized) {
+                val fileExtension = imageUri.lastPathSegment?.substringAfterLast('.') ?: "jpg"
+                val storageRef: StorageReference = storage.reference.child("registro_riscos/${UUID.randomUUID()}.$fileExtension")
+
+                val uploadTask = storageRef.putFile(imageUri)
+
+                uploadTask.addOnSuccessListener {
+                    Log.d("FirebaseUpload", "Upload da imagem realizado com sucesso!")
+                    storageRef.downloadUrl.addOnSuccessListener { uri ->
+                        riscoData["fotoUrl"] = uri.toString()
+
+                        db.collection("registro_riscos")
+                            .add(riscoData)
+                            .addOnSuccessListener { _ ->
+                                Toast.makeText(this, "Risco registrado com sucesso!", Toast.LENGTH_LONG).show()
+                                finish()
+                            }
+                            .addOnFailureListener { e ->
+                                Log.e("FirebaseUpload", "Erro ao registrar risco: $e")
+                                Toast.makeText(this, "Erro ao registrar risco: $e", Toast.LENGTH_LONG).show()
+                            }
+                    }
+                }.addOnFailureListener { e ->
+                    Log.e("FirebaseUpload", "Erro ao enviar a imagem: $e")
+                    Toast.makeText(this, "Erro ao enviar a imagem: $e", Toast.LENGTH_LONG).show()
+                }
+            } else {
+                db.collection("registro_riscos")
+                    .add(riscoData)
+                    .addOnSuccessListener { _ ->
+                        Toast.makeText(this, "Risco registrado com sucesso!", Toast.LENGTH_LONG).show()
+                        finish()
+                    }
+                    .addOnFailureListener { e ->
+                        Toast.makeText(this, "Erro ao registrar risco: $e", Toast.LENGTH_LONG).show()
+                    }
             }
+        }
+    }
 
-            val incidente = """
-                Nome: $nomeProblema
-                Risco: ${risco.toInt()}/5
-                Local: $localizacao
-                Categoria: $categoria
-                Descrição: $descricao
-            """.trimIndent()
+    private fun getLocation(etLocalizacao: EditText) {
+        try {
+            fusedLocationClient.lastLocation
+                .addOnSuccessListener(this, OnSuccessListener { location ->
+                    if (location != null) {
+                        val latitude = location.latitude
+                        val longitude = location.longitude
+                        etLocalizacao.setText("Latitude: $latitude, Longitude: $longitude")
+                    } else {
+                        etLocalizacao.setText("Localização não disponível. Por favor, insira um local aproximado.")
+                    }
+                })
+        } catch (e: SecurityException) {
+            Log.e("Location", "Permissão de localização negada. Erro: $e")
+            Toast.makeText(this, "Permissão de localização negada. Por favor, insira um local manualmente.", Toast.LENGTH_LONG).show()
+        }
+    }
 
-            Toast.makeText(this, "Incidente Registrado!\n$incidente", Toast.LENGTH_LONG).show()
-            finish()
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+
+        if (requestCode == 1) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                getLocation(findViewById(R.id.etLocalizacao))
+            } else {
+                Log.d("Permissions", "Permissão de localização negada")
+                Toast.makeText(this, "Permissão de localização necessária", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 }

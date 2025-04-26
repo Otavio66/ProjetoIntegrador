@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:background="@android:color/white"
+    android:padding="16dp">
+
+    <!-- Container Principal -->
+    <LinearLayout
+        android:layout_width="350dp"
+        android:layout_height="650dp"
+        android:layout_gravity="center"
+        android:layout_margin="16dp"
+        android:layout_marginTop="32dp"
+        android:layout_marginBottom="32dp"
+        android:background="@drawable/rounded_bg"
+        android:elevation="4dp"
+        android:orientation="vertical"
+        android:padding="20dp">
+
+        <!-- Título do Incidente -->
+        <TextView
+            android:id="@+id/incident_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:text="Título do incidente"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:paddingTop="8dp" />
+
+        <!-- Imagem do Incidente -->
+        <ImageView
+            android:id="@+id/incident_image"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:src="@drawable/ic_launcher_background"
+            android:contentDescription="Imagem do incidente"
+            android:scaleType="centerCrop" />
+
+        <!-- Localização do Incidente -->
+        <TextView
+            android:id="@+id/incident_location"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Localização: Prédio X - Sala 108, segundo andar"
+            android:paddingTop="4dp" />
+
+        <!-- Categoria do Incidente -->
+        <TextView
+            android:id="@+id/incident_category"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Categoria: Risco elétrico"
+            android:paddingTop="4dp"
+            />
+
+        <!-- Status do Incidente -->
+        <TextView
+            android:id="@+id/incident_status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Status: Aberto"
+            android:paddingTop="4dp"/>
+
+        <!-- Descrição do Incidente -->
+        <TextView
+            android:id="@+id/incident_description"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Descrição: Uma parede da sala tem fiação elétrica exposta..."
+            android:paddingTop="8dp" />
+    </LinearLayout>
+
+
+</LinearLayout>

@@ -26,10 +26,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="10dp"
-            android:text="Título do incidente"
+            android:text="TÍTULO DO INCIDENTE"
             android:textSize="18sp"
             android:textStyle="bold"
-            android:paddingTop="8dp" />
+            android:textAllCaps="true"/>
 
         <!-- Imagem do Incidente -->
         <ImageView
@@ -40,39 +40,146 @@
             android:contentDescription="Imagem do incidente"
             android:scaleType="centerCrop" />
 
+        <!-- Linha de Separação -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#DDDDDD"
+            android:layout_marginTop="16dp"/>
+
         <!-- Localização do Incidente -->
         <TextView
             android:id="@+id/incident_location"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Localização: Prédio X - Sala 108, segundo andar"
-            android:paddingTop="4dp" />
+            android:text="LOCALIZAÇÃO"
+            android:textStyle="bold" />
+
+        <!-- Descrição da Localização -->
+        <!-- Aqui vai inserir as informações conforme o banco de dados -->
+        <TextView
+            android:id="@+id/incident_location_info"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Aqui vai inserir as informações conforme o banco de dados"
+            android:paddingTop="4dp"/>
+
+        <!-- Linha de Separação -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#DDDDDD"
+            android:layout_marginTop="16dp"/>
 
         <!-- Categoria do Incidente -->
         <TextView
             android:id="@+id/incident_category"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Categoria: Risco elétrico"
-            android:paddingTop="4dp"
-            />
+            android:text="CATEGORIA"
+            android:textStyle="bold"/>
+
+        <!-- Descrição da Categoria -->
+        <!-- Aqui vai inserir as informações conforme o banco de dados -->
+        <TextView
+            android:id="@+id/incident_category_info"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Risco elétrico"
+            android:paddingTop="4dp"/>
+
+        <!-- Linha de Separação -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#DDDDDD"
+            android:layout_marginTop="16dp"/>
 
         <!-- Status do Incidente -->
         <TextView
             android:id="@+id/incident_status"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Status: Aberto"
+            android:text="STATUS"
+            android:textStyle="bold"/>
+
+        <!-- Descrição do Status -->
+        <!-- Aqui vai inserir as informações conforme o banco de dados -->
+        <TextView
+            android:id="@+id/incident_status_info"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Aberto"
             android:paddingTop="4dp"/>
+
+        <!-- Linha de Separação -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#DDDDDD"
+            android:layout_marginTop="16dp"/>
 
         <!-- Descrição do Incidente -->
         <TextView
             android:id="@+id/incident_description"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Descrição: Uma parede da sala tem fiação elétrica exposta..."
-            android:paddingTop="8dp" />
-    </LinearLayout>
+            android:text="DESCRIÇÃO"
+            android:textStyle="bold"/>
 
+        <!-- Descrição do Incidente -->
+        <!-- Aqui vai inserir as informações conforme o banco de dados -->
+        <TextView
+            android:id="@+id/incident_description_info"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Uma parede da sala tem fiação elétrica exposta..."
+            android:paddingTop="8dp"/>
+
+        <!-- Linha de Separação -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#DDDDDD"
+            android:layout_marginTop="16dp"/>
+
+        <!-- Classificação (RatingBar) -->
+        <TextView
+            android:id="@+id/incident_classification"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="CLASSIFICAÇÃO"
+            android:textStyle="bold"/>
+
+        <!-- RatingBar para Classificação -->
+        <RatingBar
+            android:id="@+id/ratingRisco"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:numStars="5"
+            android:stepSize="1.0"
+            android:layout_gravity="center"
+            android:layout_marginBottom="16dp"/>
+
+        <!-- Linha de Separação -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#DDDDDD"
+            android:layout_marginTop="16dp"/>
+
+        <!-- Botão para Adicionar Novo Registro -->
+        <Button
+            android:id="@+id/addRegistroButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="ADICIONAR UM NOVO REGISTRO"
+            android:textAllCaps="true"
+            android:layout_marginTop="16dp"
+            android:backgroundTint="#D3D3D3"
+            android:textColor="#000000"
+            android:padding="12dp"/>
+
+    </LinearLayout>
 
 </LinearLayout>

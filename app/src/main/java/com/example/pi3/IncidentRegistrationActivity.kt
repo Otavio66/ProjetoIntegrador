@@ -2,6 +2,7 @@ package com.example.pi3
 
 import android.content.Intent
 import android.os.Bundle
+import android.os.Environment
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import android.net.Uri
@@ -16,14 +17,37 @@ import android.content.pm.PackageManager
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import java.util.UUID
+import java.io.File
 import android.util.Log
+import android.app.AlertDialog
+import android.provider.MediaStore
 
 class IncidentRegistrationActivity : AppCompatActivity() {
 
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var imageUri: Uri
+    private val CAMERA_REQUEST_CODE = 100
+    private val GALLERY_REQUEST_CODE = 200
     private val db = FirebaseFirestore.getInstance()
     private val storage = FirebaseStorage.getInstance()
+
+    // Registrar o contrato para a câmera e galeria
+    private val cameraResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode == RESULT_OK) {
+            val photoUri = result.data?.data
+            if (photoUri != null) {
+                imageUri = photoUri
+                Log.d("IncidentRegistration", "Foto tirada com sucesso: $imageUri")
+            }
+        }
+    }
+
+    private val galleryResult = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
+        if (uri != null) {
+            imageUri = uri
+            Log.d("IncidentRegistration", "Imagem da galeria escolhida: $imageUri")
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,17 +73,17 @@ class IncidentRegistrationActivity : AppCompatActivity() {
             spinnerCategoria.adapter = adapter
         }
 
-        val pickImage = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
-            if (uri != null) {
-                imageUri = uri
-                Log.d("IncidentRegistration", "Imagem escolhida: $imageUri")
-                val mimeType = contentResolver.getType(uri)
-                Log.d("IncidentRegistration", "Tipo MIME da imagem: $mimeType")
-            }
-        }
-
         btnEscolherImagem.setOnClickListener {
-            pickImage.launch("image/*")
+            val options = arrayOf("Tirar Foto", "Escolher da Galeria")
+            val builder = AlertDialog.Builder(this)
+            builder.setTitle("Escolher Imagem")
+            builder.setItems(options) { dialog, which ->
+                when (which) {
+                    0 -> openCamera()
+                    1 -> galleryResult.launch("image/*")
+                }
+            }
+            builder.show()
         }
 
         debugLogin.setOnClickListener {
@@ -180,6 +204,21 @@ class IncidentRegistrationActivity : AppCompatActivity() {
                 Log.d("Permissions", "Permissão de localização negada")
                 Toast.makeText(this, "Permissão de localização necessária", Toast.LENGTH_SHORT).show()
             }
+        }
+    }
+
+    private fun openCamera() {
+        val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+        if (intent.resolveActivity(packageManager) != null) {
+            val fileName = "incident_image.jpg"
+            val storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+            val photoFile = File.createTempFile(fileName, ".jpg", storageDir)
+            imageUri = Uri.fromFile(photoFile)
+
+            intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri)
+            cameraResult.launch(intent)  // Usando o novo método de Activity Result API
+        } else {
+            Toast.makeText(this, "Câmera não disponível", Toast.LENGTH_SHORT).show()
         }
     }
 }

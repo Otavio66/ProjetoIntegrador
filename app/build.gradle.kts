@@ -49,6 +49,7 @@ dependencies {
     implementation("com.google.firebase:firebase-analytics")
     implementation("com.google.firebase:firebase-firestore-ktx")
     implementation("com.google.firebase:firebase-auth-ktx")
-    implementation("com.google.firebase:firebase-storage-ktx") // Adicionando dependência para Firebase Storage
+    implementation("com.google.firebase:firebase-storage-ktx")
     implementation("com.google.android.gms:play-services-location:18.0.0")
+    implementation("com.cloudinary:cloudinary-android:2.3.1")
 }

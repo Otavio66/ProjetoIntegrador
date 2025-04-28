@@ -1,44 +1,40 @@
 package com.example.pi3
 
+import android.Manifest
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
+import android.provider.MediaStore
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
-import android.net.Uri
+import android.util.Log
 import androidx.activity.result.contract.ActivityResultContracts
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.storage.FirebaseStorage
-import com.google.firebase.storage.StorageReference
-import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationServices
-import com.google.android.gms.tasks.OnSuccessListener
-import android.content.pm.PackageManager
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import java.util.UUID
+import androidx.core.content.FileProvider
+import com.cloudinary.android.MediaManager
+import com.cloudinary.android.callback.ErrorInfo
+import com.cloudinary.android.callback.UploadCallback
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
+import com.google.firebase.firestore.FirebaseFirestore
 import java.io.File
-import android.util.Log
+import java.util.*
+import android.content.pm.PackageManager
 import android.app.AlertDialog
-import android.provider.MediaStore
 
 class IncidentRegistrationActivity : AppCompatActivity() {
 
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var imageUri: Uri
-    private val CAMERA_REQUEST_CODE = 100
-    private val GALLERY_REQUEST_CODE = 200
+    private var cameraPhotoFile: File? = null
     private val db = FirebaseFirestore.getInstance()
-    private val storage = FirebaseStorage.getInstance()
 
-    // Registrar o contrato para a câmera e galeria
     private val cameraResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-        if (result.resultCode == RESULT_OK) {
-            val photoUri = result.data?.data
-            if (photoUri != null) {
-                imageUri = photoUri
-                Log.d("IncidentRegistration", "Foto tirada com sucesso: $imageUri")
-            }
+        if (result.resultCode == RESULT_OK && cameraPhotoFile != null) {
+            imageUri = FileProvider.getUriForFile(this, "com.example.pi3.fileprovider", cameraPhotoFile!!)
+            Log.d("IncidentRegistration", "Foto tirada com sucesso: $imageUri")
         }
     }
 
@@ -51,127 +47,147 @@ class IncidentRegistrationActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_incident_registration)
+        try {
+            setContentView(R.layout.activity_incident_registration)
 
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
+            fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
-        val btnEnviar = findViewById<Button>(R.id.btnEnviar)
-        val etLocalizacao = findViewById<EditText>(R.id.etLocalizacao)
-        val ratingRisco = findViewById<RatingBar>(R.id.ratingRisco)
-        val spinnerCategoria = findViewById<Spinner>(R.id.spinnerCategoria)
-        val btnEscolherImagem = findViewById<Button>(R.id.btnEscolherImagem)
+            val btnEnviar = findViewById<Button>(R.id.btnEnviar)
+            val etLocalizacao = findViewById<EditText>(R.id.etLocalizacao)
+            val ratingRisco = findViewById<RatingBar>(R.id.ratingRisco)
+            val spinnerCategoria = findViewById<Spinner>(R.id.spinnerCategoria)
+            val btnEscolherImagem = findViewById<Button>(R.id.btnEscolherImagem)
+            val debugLogin = findViewById<TextView>(R.id.debugLogin)
+            val debugMain = findViewById<TextView>(R.id.debugMain)
 
-        val debugLogin = findViewById<TextView>(R.id.debugLogin)
-        val debugMain = findViewById<TextView>(R.id.debugMain)
+            ArrayAdapter.createFromResource(
+                this,
+                R.array.categorias,
+                android.R.layout.simple_spinner_item
+            ).also { adapter ->
+                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                spinnerCategoria.adapter = adapter
+            }
 
-        ArrayAdapter.createFromResource(
-            this,
-            R.array.categorias,
-            android.R.layout.simple_spinner_item
-        ).also { adapter ->
-            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-            spinnerCategoria.adapter = adapter
-        }
+            btnEscolherImagem.setOnClickListener {
+                val options = arrayOf("Tirar Foto", "Escolher da Galeria")
+                val builder = AlertDialog.Builder(this)
+                builder.setTitle("Escolher Imagem")
+                builder.setItems(options) { _, which ->
+                    when (which) {
+                        0 -> openCamera()
+                        1 -> galleryResult.launch("image/*")
+                    }
+                }
+                builder.show()
+            }
 
-        btnEscolherImagem.setOnClickListener {
-            val options = arrayOf("Tirar Foto", "Escolher da Galeria")
-            val builder = AlertDialog.Builder(this)
-            builder.setTitle("Escolher Imagem")
-            builder.setItems(options) { dialog, which ->
-                when (which) {
-                    0 -> openCamera()
-                    1 -> galleryResult.launch("image/*")
+            debugLogin.setOnClickListener {
+                startActivity(Intent(this, LoginActivity::class.java))
+            }
+
+            debugMain.setOnClickListener {
+                startActivity(Intent(this, InicialActivity::class.java))
+            }
+
+            checkLocationPermissionAndGetLocation(etLocalizacao)
+
+            btnEnviar.setOnClickListener {
+                val nomeProblema = findViewById<EditText>(R.id.etNomeProblema).text.toString()
+                val risco = ratingRisco.rating
+                val localizacao = etLocalizacao.text.toString()
+                val categoria = spinnerCategoria.selectedItem?.toString() ?: ""
+                val descricao = findViewById<EditText>(R.id.etDescricao).text.toString()
+
+                if (nomeProblema.isEmpty() || risco == 0f || localizacao.isEmpty() || categoria == "Selecione" || descricao.isEmpty()) {
+                    Toast.makeText(this, "Preencha todos os campos corretamente!", Toast.LENGTH_SHORT).show()
+                    return@setOnClickListener
+                }
+
+                val riscoData: HashMap<String, Any> = hashMapOf(
+                    "nomeProblema" to nomeProblema,
+                    "risco" to risco.toInt(),
+                    "localizacao" to localizacao,
+                    "categoria" to categoria,
+                    "descricao" to descricao
+                )
+
+                if (::imageUri.isInitialized) {
+                    MediaManager.get().upload(imageUri)
+                        .unsigned("upload_riscos")
+                        .callback(object : UploadCallback {
+                            override fun onStart(requestId: String) {
+                                Toast.makeText(this@IncidentRegistrationActivity, "Iniciando upload...", Toast.LENGTH_SHORT).show()
+                            }
+
+                            override fun onProgress(requestId: String, bytes: Long, totalBytes: Long) {}
+
+                            override fun onSuccess(requestId: String, resultData: Map<*, *>) {
+                                val url = resultData["secure_url"] as String
+                                riscoData["fotoUrl"] = url
+                                salvarNoFirestore(riscoData)
+                            }
+
+                            override fun onError(requestId: String, error: ErrorInfo) {
+                                Toast.makeText(this@IncidentRegistrationActivity, "Erro no upload: ${error.description}", Toast.LENGTH_LONG).show()
+                            }
+
+                            override fun onReschedule(requestId: String, error: ErrorInfo) {}
+                        }).dispatch()
+                } else {
+                    salvarNoFirestore(riscoData)
                 }
             }
-            builder.show()
+        } catch (e: Exception) {
+            Log.e("IncidentRegistration", "Erro crítico ao abrir a tela: ${e.message}", e)
+            showErrorDialog("Erro crítico ao abrir a tela", e.message ?: "Erro desconhecido")
         }
+    }
 
-        debugLogin.setOnClickListener {
-            startActivity(Intent(this, LoginActivity::class.java))
-        }
+    private fun salvarNoFirestore(riscoData: HashMap<String, Any>) {
+        db.collection("registro_riscos")
+            .add(riscoData)
+            .addOnSuccessListener {
+                Toast.makeText(this, "Risco registrado com sucesso!", Toast.LENGTH_LONG).show()
+                finish()
+            }
+            .addOnFailureListener { e ->
+                Log.e("Firestore", "Erro ao registrar risco: $e")
+                Toast.makeText(this, "Erro ao registrar risco: $e", Toast.LENGTH_LONG).show()
+            }
+    }
 
-        debugMain.setOnClickListener {
-            startActivity(Intent(this, InicialActivity::class.java))
-        }
-
-        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION), 1)
-        } else {
+    private fun checkLocationPermissionAndGetLocation(etLocalizacao: EditText) {
+        if (ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED
+        ) {
             getLocation(etLocalizacao)
-        }
-
-        btnEnviar.setOnClickListener {
-            val nomeProblema = findViewById<EditText>(R.id.etNomeProblema).text.toString()
-            val risco = ratingRisco.rating
-            val localizacao = etLocalizacao.text.toString()
-            val categoria = spinnerCategoria.selectedItem?.toString() ?: ""
-            val descricao = findViewById<EditText>(R.id.etDescricao).text.toString()
-
-            if (nomeProblema.isEmpty()) {
-                Toast.makeText(this, "Por favor, insira o nome do problema.", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-            if (risco == 0f) {
-                Toast.makeText(this, "Por favor, avalie o risco do problema.", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-            if (localizacao.isEmpty()) {
-                Toast.makeText(this, "Por favor, insira a localização do risco.", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-            if (categoria == "" || categoria == "Selecione") {
-                Toast.makeText(this, "Por favor, selecione uma categoria.", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-            if (descricao.isEmpty()) {
-                Toast.makeText(this, "Por favor, insira uma descrição do risco.", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-
-            val riscoData = hashMapOf(
-                "nomeProblema" to nomeProblema,
-                "risco" to risco.toInt(),
-                "localizacao" to localizacao,
-                "categoria" to categoria,
-                "descricao" to descricao
-            )
-
-            if (::imageUri.isInitialized) {
-                val fileExtension = imageUri.lastPathSegment?.substringAfterLast('.') ?: "jpg"
-                val storageRef: StorageReference = storage.reference.child("registro_riscos/${UUID.randomUUID()}.$fileExtension")
-
-                val uploadTask = storageRef.putFile(imageUri)
-
-                uploadTask.addOnSuccessListener {
-                    Log.d("FirebaseUpload", "Upload da imagem realizado com sucesso!")
-                    storageRef.downloadUrl.addOnSuccessListener { uri ->
-                        riscoData["fotoUrl"] = uri.toString()
-
-                        db.collection("registro_riscos")
-                            .add(riscoData)
-                            .addOnSuccessListener { _ ->
-                                Toast.makeText(this, "Risco registrado com sucesso!", Toast.LENGTH_LONG).show()
-                                finish()
-                            }
-                            .addOnFailureListener { e ->
-                                Log.e("FirebaseUpload", "Erro ao registrar risco: $e")
-                                Toast.makeText(this, "Erro ao registrar risco: $e", Toast.LENGTH_LONG).show()
-                            }
+        } else {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
+                AlertDialog.Builder(this)
+                    .setTitle("Permissão Necessária")
+                    .setMessage("Este app precisa da permissão de localização para registrar o local do incidente.")
+                    .setPositiveButton("OK") { _, _ ->
+                        ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), 1)
                     }
-                }.addOnFailureListener { e ->
-                    Log.e("FirebaseUpload", "Erro ao enviar a imagem: $e")
-                    Toast.makeText(this, "Erro ao enviar a imagem: $e", Toast.LENGTH_LONG).show()
-                }
+                    .setNegativeButton("Cancelar", null)
+                    .show()
             } else {
-                db.collection("registro_riscos")
-                    .add(riscoData)
-                    .addOnSuccessListener { _ ->
-                        Toast.makeText(this, "Risco registrado com sucesso!", Toast.LENGTH_LONG).show()
-                        finish()
-                    }
-                    .addOnFailureListener { e ->
-                        Toast.makeText(this, "Erro ao registrar risco: $e", Toast.LENGTH_LONG).show()
-                    }
+                ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), 1)
+            }
+        }
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        val etLocalizacao = findViewById<EditText>(R.id.etLocalizacao)
+        if (requestCode == 1) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                getLocation(etLocalizacao)
+            } else {
+                Toast.makeText(this, "Permissão de localização negada. Insira manualmente.", Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -179,46 +195,46 @@ class IncidentRegistrationActivity : AppCompatActivity() {
     private fun getLocation(etLocalizacao: EditText) {
         try {
             fusedLocationClient.lastLocation
-                .addOnSuccessListener(this, OnSuccessListener { location ->
+                .addOnSuccessListener { location ->
                     if (location != null) {
-                        val latitude = location.latitude
-                        val longitude = location.longitude
-                        etLocalizacao.setText("Latitude: $latitude, Longitude: $longitude")
+                        etLocalizacao.setText("Latitude: ${location.latitude}, Longitude: ${location.longitude}")
                     } else {
-                        etLocalizacao.setText("Localização não disponível. Por favor, insira um local aproximado.")
+                        etLocalizacao.setText("Localização não disponível. Insira manualmente.")
                     }
-                })
+                }
+                .addOnFailureListener {
+                    etLocalizacao.setText("Erro ao obter localização. Insira manualmente.")
+                    Log.e("Location", "Erro ao obter localização: $it")
+                }
         } catch (e: SecurityException) {
-            Log.e("Location", "Permissão de localização negada. Erro: $e")
-            Toast.makeText(this, "Permissão de localização negada. Por favor, insira um local manualmente.", Toast.LENGTH_LONG).show()
-        }
-    }
-
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-
-        if (requestCode == 1) {
-            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                getLocation(findViewById(R.id.etLocalizacao))
-            } else {
-                Log.d("Permissions", "Permissão de localização negada")
-                Toast.makeText(this, "Permissão de localização necessária", Toast.LENGTH_SHORT).show()
-            }
+            Log.e("Location", "Permissão não concedida: $e")
         }
     }
 
     private fun openCamera() {
         val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
         if (intent.resolveActivity(packageManager) != null) {
-            val fileName = "incident_image.jpg"
-            val storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES)
-            val photoFile = File.createTempFile(fileName, ".jpg", storageDir)
-            imageUri = Uri.fromFile(photoFile)
+            val photoFile = File.createTempFile("incident_image", ".jpg", getExternalFilesDir(Environment.DIRECTORY_PICTURES))
+            cameraPhotoFile = photoFile
+            val photoUri = FileProvider.getUriForFile(this, "com.example.pi3.fileprovider", photoFile)
+            imageUri = photoUri
 
-            intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri)
-            cameraResult.launch(intent)  // Usando o novo método de Activity Result API
+            intent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri)
+            intent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION or Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            cameraResult.launch(intent)
         } else {
             Toast.makeText(this, "Câmera não disponível", Toast.LENGTH_SHORT).show()
         }
+    }
+
+    private fun showErrorDialog(title: String, message: String) {
+        AlertDialog.Builder(this)
+            .setTitle(title)
+            .setMessage("Motivo: $message")
+            .setPositiveButton("OK") { _, _ ->
+                finish()
+            }
+            .setCancelable(false)
+            .show()
     }
 }

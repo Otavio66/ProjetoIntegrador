@@ -13,16 +13,14 @@ import android.util.Log
 
 class LoginActivity : AppCompatActivity() {
 
-    private lateinit var auth: FirebaseAuth  // FirebaseAuth para autenticação
+    private lateinit var auth: FirebaseAuth
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_login) // Vincula ao XML da tela
+        setContentView(R.layout.activity_login)
 
-        // Inicializando o Firebase Authentication
         auth = FirebaseAuth.getInstance()
 
-        // Testando a integração com o Firestore
         val db: FirebaseFirestore = FirebaseFirestore.getInstance()
         val testeData = hashMapOf(
             "teste_login_activity" to "Integração Firebase OK!",
@@ -38,14 +36,12 @@ class LoginActivity : AppCompatActivity() {
                 Log.e("FirebaseTeste", "Teste da LoginActivity: Erro ao adicionar documento: ${e.message}", e)
             }
 
-        // Botao Cadastro
         val tvCadastrar = findViewById<TextView>(R.id.tvCadastrar)
         tvCadastrar.setOnClickListener {
             val intent = Intent(this, CadastroActivity::class.java)
             startActivity(intent)
         }
 
-        // Botao login
         val btnLogin = findViewById<Button>(R.id.btnEntrar)
         btnLogin.setOnClickListener {
             val email = findViewById<EditText>(R.id.etIdentificacao).text.toString()
@@ -54,20 +50,15 @@ class LoginActivity : AppCompatActivity() {
             if (email.isEmpty() || senha.isEmpty()) {
                 Toast.makeText(this, "Preencha todos os campos!", Toast.LENGTH_SHORT).show()
             } else {
-                // Tenta fazer login
                 auth.signInWithEmailAndPassword(email, senha)
                     .addOnCompleteListener(this) { task ->
                         if (task.isSuccessful) {
-                            // Login realizado
                             val user = auth.currentUser
                             Toast.makeText(this, "Login realizado com sucesso!", Toast.LENGTH_SHORT).show()
-
-                            // Redireciona para a tela inicial se o logi estiver funcionado
-                            val intent = Intent(this, InicialActivity::class.java)  // Direciona para InicialActivity
+                            val intent = Intent(this, InicialActivity::class.java)
                             startActivity(intent)
-                            finish()  // Fecha a tela de login
+                            finish()
                         } else {
-                            // se o login falhar
                             Log.e("FirebaseLogin", "Erro no login: ${task.exception?.message}")
                             Toast.makeText(this, "Falha no login. Verifique seu email e senha.", Toast.LENGTH_SHORT).show()
                         }
@@ -75,10 +66,9 @@ class LoginActivity : AppCompatActivity() {
             }
         }
 
-        // Debug Button
         val tvDebug = findViewById<TextView>(R.id.tvDebugRegistrar)
         tvDebug.setOnClickListener {
-            val intent = Intent(this, InicialActivity::class.java) // Redireciona para a InicialActivity
+            val intent = Intent(this, InicialActivity::class.java)
             startActivity(intent)
         }
     }

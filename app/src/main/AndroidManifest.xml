@@ -37,6 +37,8 @@
         <activity android:name=".InicialActivity" android:exported="true" />
         <activity android:name=".IncidentRegistrationActivity" android:exported="false" />
         <activity android:name=".CadastroActivity" android:exported="false" />
+        <activity android:name=".DetalheRegistroActivity"></activity>
+
         <activity
             android:name=".LoginActivity"
             android:exported="true">

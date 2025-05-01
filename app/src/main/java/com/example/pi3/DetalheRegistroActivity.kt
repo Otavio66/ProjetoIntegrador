@@ -1,0 +1,49 @@
+package com.example.pi3
+
+import android.os.Bundle
+import android.widget.ImageView
+import android.widget.RatingBar
+import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
+import com.bumptech.glide.Glide
+
+class DetalheRegistroActivity : AppCompatActivity() {
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_detalhe_registro)  // Certifique-se de que o layout está correto
+
+        // Obtendo as referências para os campos no layout
+        val nomeProblemaTextView = findViewById<TextView>(R.id.incident_title)
+        val fotoImageView = findViewById<ImageView>(R.id.incident_image)
+        val localizacaoTextView = findViewById<TextView>(R.id.incident_location_info)
+        val categoriaTextView = findViewById<TextView>(R.id.incident_category_info)
+        val statusTextView = findViewById<TextView>(R.id.incident_status_info)
+        val descricaoTextView = findViewById<TextView>(R.id.incident_description_info)
+        val classificacaoRatingBar = findViewById<RatingBar>(R.id.ratingRisco)
+
+        // Pegando os dados do Intent
+        val nomeProblema = intent.getStringExtra("nomeProblema")
+        val descricao = intent.getStringExtra("descricao")
+        val fotoUrl = intent.getStringExtra("fotoUrl")
+        val localizacao = intent.getStringExtra("localizacao")
+        val categoria = intent.getStringExtra("categoria")
+        val status = intent.getStringExtra("status")
+        val classificacao = intent.getFloatExtra("classificacao", 0f)
+
+        // Configurando os campos com os dados recebidos
+        nomeProblemaTextView.text = nomeProblema
+        localizacaoTextView.text = localizacao
+        categoriaTextView.text = categoria
+        statusTextView.text = status
+        descricaoTextView.text = descricao
+        classificacaoRatingBar.rating = classificacao
+
+        // Carregar a imagem usando Glide
+        if (!fotoUrl.isNullOrEmpty()) {
+            Glide.with(this)
+                .load(fotoUrl)  // URL da imagem do Cloudinary
+                .into(fotoImageView)  // Coloca a imagem no ImageView
+        }
+    }
+}

@@ -109,7 +109,8 @@ class IncidentRegistrationActivity : AppCompatActivity() {
                     "risco" to risco.toInt(),
                     "localizacao" to localizacao,
                     "categoria" to categoria,
-                    "descricao" to descricao
+                    "descricao" to descricao,
+                    "status" to "Ativo" // Adicionando o campo 'status' com valor 'ativo'
                 )
 
                 if (::imageUri.isInitialized) {
@@ -236,5 +237,31 @@ class IncidentRegistrationActivity : AppCompatActivity() {
             }
             .setCancelable(false)
             .show()
+    }
+
+    // Função para atualizar documentos existentes e adicionar o campo 'status'
+    private fun adicionarStatusAosDocumentosExistentes() {
+        db.collection("registro_riscos")
+            .get() // Obtém todos os documentos da coleção
+            .addOnSuccessListener { result ->
+                for (document in result) {
+                    // Verifica se o campo 'status' não existe no documento
+                    if (!document.contains("status")) {
+                        val documentId = document.id
+                        // Atualiza o documento com o campo 'status' e valor 'ativo'
+                        db.collection("registro_riscos").document(documentId)
+                            .update("status", "Ativo")
+                            .addOnSuccessListener {
+                                Log.d("Firestore", "Campo 'status' adicionado ao documento $documentId")
+                            }
+                            .addOnFailureListener { e ->
+                                Log.e("Firestore", "Erro ao adicionar o campo 'status': $e")
+                            }
+                    }
+                }
+            }
+            .addOnFailureListener { e ->
+                Log.e("Firestore", "Erro ao obter documentos: $e")
+            }
     }
 }

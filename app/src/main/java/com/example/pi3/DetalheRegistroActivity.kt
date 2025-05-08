@@ -18,7 +18,6 @@ class DetalheRegistroActivity : AppCompatActivity() {
         val fotoImageView = findViewById<ImageView>(R.id.incident_image)
         val localizacaoTextView = findViewById<TextView>(R.id.incident_location_info)
         val categoriaTextView = findViewById<TextView>(R.id.incident_category_info)
-        val statusTextView = findViewById<TextView>(R.id.incident_status_info)
         val descricaoTextView = findViewById<TextView>(R.id.incident_description_info)
         val classificacaoRatingBar = findViewById<RatingBar>(R.id.ratingRisco)
 
@@ -28,14 +27,12 @@ class DetalheRegistroActivity : AppCompatActivity() {
         val fotoUrl = intent.getStringExtra("fotoUrl")
         val localizacao = intent.getStringExtra("localizacao")
         val categoria = intent.getStringExtra("categoria")
-        val status = intent.getStringExtra("status")
         val classificacao = intent.getFloatExtra("classificacao", 0f)
 
         // Configurando os campos com os dados recebidos
         nomeProblemaTextView.text = nomeProblema
         localizacaoTextView.text = localizacao
         categoriaTextView.text = categoria
-        statusTextView.text = status
         descricaoTextView.text = descricao
         classificacaoRatingBar.rating = classificacao
 

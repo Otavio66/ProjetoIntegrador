@@ -18,6 +18,7 @@
         android:layout_marginTop="32dp"
         android:layout_marginBottom="32dp">
 
+        <!-- Título -->
         <TextView
             android:id="@+id/incident_title"
             android:layout_width="wrap_content"
@@ -29,6 +30,7 @@
             android:textAllCaps="true"
             android:gravity="center"/>
 
+        <!-- Imagem -->
         <ImageView
             android:id="@+id/incident_image"
             android:layout_width="match_parent"
@@ -36,104 +38,8 @@
             android:contentDescription="Imagem do incidente"
             android:scaleType="centerCrop"/>
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="#DDDDDD"
-            android:layout_marginTop="16dp"/>
 
-        <TextView
-            android:id="@+id/incident_location"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="LOCALIZAÇÃO"
-            android:textStyle="bold"
-            android:layout_marginTop="16dp"
-            android:gravity="center"/>
-
-        <TextView
-            android:id="@+id/incident_location_info"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Informações de Localização"
-            android:paddingTop="4dp"
-            android:gravity="center"/>
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="#DDDDDD"
-            android:layout_marginTop="16dp"/>
-
-        <TextView
-            android:id="@+id/incident_category"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="CATEGORIA"
-            android:textStyle="bold"
-            android:layout_marginTop="16dp"
-            android:gravity="center"/>
-
-        <TextView
-            android:id="@+id/incident_category_info"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Risco elétrico"
-            android:paddingTop="4dp"
-            android:gravity="center"/>
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="#DDDDDD"
-            android:layout_marginTop="16dp"/>
-
-        <TextView
-            android:id="@+id/incident_status"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="STATUS"
-            android:textStyle="bold"
-            android:layout_marginTop="16dp"
-            android:gravity="center"/>
-
-        <TextView
-            android:id="@+id/incident_status_info"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Aberto"
-            android:paddingTop="4dp"
-            android:gravity="center"/>
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="#DDDDDD"
-            android:layout_marginTop="16dp"/>
-
-        <TextView
-            android:id="@+id/incident_description"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="DESCRIÇÃO"
-            android:textStyle="bold"
-            android:layout_marginTop="16dp"
-            android:gravity="center"/>
-
-        <TextView
-            android:id="@+id/incident_description_info"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Uma parede da sala tem fiação elétrica exposta..."
-            android:paddingTop="8dp"
-            android:gravity="center"/>
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="#DDDDDD"
-            android:layout_marginTop="16dp"/>
-
+        <!-- Classificação -->
         <TextView
             android:id="@+id/incident_classification"
             android:layout_width="wrap_content"
@@ -151,14 +57,82 @@
             android:stepSize="1.0"
             android:layout_gravity="center"
             android:isIndicator="true"
-            android:layout_marginBottom="16dp"/>
+            android:layout_marginBottom="-24dp"/>
 
+        <!-- Separador -->
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="#DDDDDD"
             android:layout_marginTop="16dp"/>
 
+        <!-- Categoria -->
+        <TextView
+            android:id="@+id/incident_category"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="CATEGORIA"
+            android:textStyle="bold"
+            android:layout_marginTop="4dp"
+            android:gravity="center"/>
+
+        <TextView
+            android:id="@+id/incident_category_info"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Risco elétrico"
+            android:paddingTop="4dp"
+            android:gravity="center"/>
+
+        <!-- Separador -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#DDDDDD"
+            android:layout_marginTop="4dp"/>
+
+        <!-- Localização -->
+        <TextView
+            android:id="@+id/incident_location"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="LOCALIZAÇÃO"
+            android:textStyle="bold"
+            android:layout_marginTop="4dp"
+            android:gravity="center"/>
+
+        <TextView
+            android:id="@+id/incident_location_info"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Informações de Localização"
+            android:paddingTop="4dp"
+            android:gravity="center"/>
+
+        <!-- Separador -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#DDDDDD"
+            android:layout_marginTop="4dp"/>
+
+        <!-- Descrição -->
+        <TextView
+            android:id="@+id/incident_description"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="DESCRIÇÃO"
+            android:textStyle="bold"
+            android:layout_marginTop="4dp"
+            android:gravity="center"/>
+
+        <TextView
+            android:id="@+id/incident_description_info"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Uma parede da sala tem fiação elétrica exposta..."
+            android:paddingTop="8dp"
+            android:gravity="start"/>
 
     </LinearLayout>
 

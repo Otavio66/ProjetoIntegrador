@@ -6,6 +6,15 @@
     android:padding="16dp"
     android:background="#FFFFFF">
 
+    <Button
+        android:id="@+id/debugButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Atualizar Dados (Debug)"
+        android:layout_marginTop="16dp"
+        android:backgroundTint="#44FF44"
+        android:textColor="#000000"/>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -15,9 +24,7 @@
         android:background="@drawable/rounded_bg_gray"
         android:elevation="4dp"
         android:layout_marginTop="16dp"
-        android:clipToPadding="false"
-        >
-
+        android:clipToPadding="false">
 
         <ListView
             android:id="@+id/registroListView"
@@ -35,6 +42,6 @@
         android:text="Adicionar um novo registro"
         android:layout_marginTop="16dp"
         android:backgroundTint="#D3D3D3"
-        android:textColor="#000000"
-        />
+        android:textColor="#000000"/>
+
 </LinearLayout>

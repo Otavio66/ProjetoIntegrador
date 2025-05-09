@@ -18,8 +18,15 @@ class InicialActivity : AppCompatActivity() {
 
         val addRegistroButton = findViewById<Button>(R.id.addRegistroButton)
         val registroListView = findViewById<ListView>(R.id.registroListView)
+        val debugButton = findViewById<Button>(R.id.debugButton)
 
-        // Quando o botão "Adicionar Registro" for clicado, vai para a tela de registro
+        // Atualiza a tela
+        debugButton.setOnClickListener {
+            Toast.makeText(this, "Atualizando registros...", Toast.LENGTH_SHORT).show()
+            carregarRegistros(registroListView) // Atualiza a ListView
+        }
+
+        // Vai para a tela de registro
         addRegistroButton.setOnClickListener {
             val intent = Intent(this, IncidentRegistrationActivity::class.java)
             startActivity(intent)

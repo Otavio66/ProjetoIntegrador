@@ -32,11 +32,13 @@ class IncidentRegistrationActivity : AppCompatActivity() {
     private val db = FirebaseFirestore.getInstance()
 
     private val cameraResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-        if (result.resultCode == RESULT_OK && cameraPhotoFile != null) {
-            imageUri = FileProvider.getUriForFile(this, "com.example.pi3.fileprovider", cameraPhotoFile!!)
-            Log.d("IncidentRegistration", "Foto tirada com sucesso: $imageUri")
+        if (result.resultCode == RESULT_OK) {
+            Toast.makeText(this, "Imagem capturada!", Toast.LENGTH_SHORT).show()
+        } else {
+            Toast.makeText(this, "Captura de imagem cancelada.", Toast.LENGTH_SHORT).show()
         }
     }
+
 
     private val galleryResult = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
         if (uri != null) {
@@ -44,6 +46,15 @@ class IncidentRegistrationActivity : AppCompatActivity() {
             Log.d("IncidentRegistration", "Imagem da galeria escolhida: $imageUri")
         }
     }
+
+    private fun checkCameraPermissionAndOpenCamera() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CAMERA), 100)
+        } else {
+            openCamera()
+        }
+    }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -75,12 +86,13 @@ class IncidentRegistrationActivity : AppCompatActivity() {
                 builder.setTitle("Escolher Imagem")
                 builder.setItems(options) { _, which ->
                     when (which) {
-                        0 -> openCamera()
+                        0 -> checkCameraPermissionAndOpenCamera()
                         1 -> galleryResult.launch("image/*")
                     }
                 }
                 builder.show()
             }
+
 
             debugLogin.setOnClickListener {
                 startActivity(Intent(this, LoginActivity::class.java))
@@ -110,7 +122,7 @@ class IncidentRegistrationActivity : AppCompatActivity() {
                     "localizacao" to localizacao,
                     "categoria" to categoria,
                     "descricao" to descricao,
-                    "status" to "Ativo" // Adicionando o campo 'status' com valor 'ativo'
+                    "status" to "Ativo"
                 )
 
                 if (::imageUri.isInitialized) {
@@ -184,14 +196,22 @@ class IncidentRegistrationActivity : AppCompatActivity() {
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         val etLocalizacao = findViewById<EditText>(R.id.etLocalizacao)
+
         if (requestCode == 1) {
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 getLocation(etLocalizacao)
             } else {
                 Toast.makeText(this, "Permissão de localização negada. Insira manualmente.", Toast.LENGTH_SHORT).show()
             }
+        } else if (requestCode == 100) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                openCamera()
+            } else {
+                Toast.makeText(this, "Permissão da câmera negada.", Toast.LENGTH_SHORT).show()
+            }
         }
     }
+
 
     private fun getLocation(etLocalizacao: EditText) {
         try {
@@ -214,19 +234,45 @@ class IncidentRegistrationActivity : AppCompatActivity() {
 
     private fun openCamera() {
         val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-        if (intent.resolveActivity(packageManager) != null) {
-            val photoFile = File.createTempFile("incident_image", ".jpg", getExternalFilesDir(Environment.DIRECTORY_PICTURES))
-            cameraPhotoFile = photoFile
-            val photoUri = FileProvider.getUriForFile(this, "com.example.pi3.fileprovider", photoFile)
-            imageUri = photoUri
+        Log.d("CAMERA", "Intent criada")
 
-            intent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri)
-            intent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION or Intent.FLAG_GRANT_READ_URI_PERMISSION)
-            cameraResult.launch(intent)
-        } else {
-            Toast.makeText(this, "Câmera não disponível", Toast.LENGTH_SHORT).show()
+        if (intent.resolveActivity(packageManager) == null) {
+            Toast.makeText(this, "Nenhum app de câmera encontrado!", Toast.LENGTH_SHORT).show()
+            Log.e("CAMERA", "Nenhum app de câmera disponível para capturar imagem.")
+            return
         }
+
+        val storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+        if (storageDir == null) {
+            Toast.makeText(this, "Erro ao acessar diretório de imagens", Toast.LENGTH_SHORT).show()
+            Log.e("CAMERA", "Diretório de imagens inacessível")
+            return
+        }
+
+        val photoFile = try {
+            File.createTempFile("incident_image_", ".jpg", storageDir)
+        } catch (e: Exception) {
+            Toast.makeText(this, "Erro ao criar arquivo da imagem", Toast.LENGTH_SHORT).show()
+            Log.e("CAMERA", "Erro ao criar arquivo temporário: ${e.message}", e)
+            return
+        }
+
+        cameraPhotoFile = photoFile
+        val photoUri = FileProvider.getUriForFile(
+            this,
+            "com.example.pi3.fileprovider",
+            photoFile
+        )
+        imageUri = photoUri
+
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri)
+        intent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION or Intent.FLAG_GRANT_READ_URI_PERMISSION)
+
+        Log.d("CAMERA", "Iniciando captura de imagem com URI: $photoUri")
+
+        cameraResult.launch(intent)
     }
+
 
     private fun showErrorDialog(title: String, message: String) {
         AlertDialog.Builder(this)

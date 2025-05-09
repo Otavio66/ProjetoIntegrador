@@ -20,19 +20,16 @@ class InicialActivity : AppCompatActivity() {
         val registroListView = findViewById<ListView>(R.id.registroListView)
         val debugButton = findViewById<Button>(R.id.debugButton)
 
-        // Atualiza a tela
         debugButton.setOnClickListener {
             Toast.makeText(this, "Atualizando registros...", Toast.LENGTH_SHORT).show()
-            carregarRegistros(registroListView) // Atualiza a ListView
+            carregarRegistros(registroListView)
         }
 
-        // Vai para a tela de registro
         addRegistroButton.setOnClickListener {
             val intent = Intent(this, IncidentRegistrationActivity::class.java)
             startActivity(intent)
         }
 
-        // Carregar os registros do Firestore
         carregarRegistros(registroListView)
     }
 
@@ -53,16 +50,13 @@ class InicialActivity : AppCompatActivity() {
                     registros.add(Registro(nomeProblema, descricao, fotoUrl, localizacao, categoria, status, classificacao))
                 }
 
-                // Criar o adapter e vincular à ListView
                 val adapter = RegistroAdapter(this, registros)
                 registroListView.adapter = adapter
 
-                // Configurar o clique na lista
                 registroListView.setOnItemClickListener { _, _, position, _ ->
                     val registro = registros[position]
                     val intent = Intent(this, DetalheRegistroActivity::class.java)
 
-                    // Passar todos os dados para a DetalheRegistroActivity
                     intent.putExtra("nomeProblema", registro.nomeProblema)
                     intent.putExtra("descricao", registro.descricao)
                     intent.putExtra("fotoUrl", registro.fotoUrl)

@@ -11,9 +11,8 @@ class DetalheRegistroActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_detalhe_registro)  // Certifique-se de que o layout está correto
+        setContentView(R.layout.activity_detalhe_registro)
 
-        // Obtendo as referências para os campos no layout
         val nomeProblemaTextView = findViewById<TextView>(R.id.incident_title)
         val fotoImageView = findViewById<ImageView>(R.id.incident_image)
         val localizacaoTextView = findViewById<TextView>(R.id.incident_location_info)
@@ -29,14 +28,13 @@ class DetalheRegistroActivity : AppCompatActivity() {
         val categoria = intent.getStringExtra("categoria")
         val classificacao = intent.getFloatExtra("classificacao", 0f)
 
-        // Configurando os campos com os dados recebidos
         nomeProblemaTextView.text = nomeProblema
         localizacaoTextView.text = localizacao
         categoriaTextView.text = categoria
         descricaoTextView.text = descricao
         classificacaoRatingBar.rating = classificacao
 
-        // Carregar a imagem usando Glide
+
         if (!fotoUrl.isNullOrEmpty()) {
             Glide.with(this)
                 .load(fotoUrl)  // URL da imagem do Cloudinary

@@ -1,6 +1,5 @@
 package com.example.pi3
 
-// Modelo de Dados para Registro
 data class Registro(
     val nomeProblema: String,
     val descricao: String,

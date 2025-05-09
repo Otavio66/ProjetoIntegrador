@@ -14,7 +14,6 @@ class RegistroAdapter(context: Context, registros: List<Registro>) :
         val registro = getItem(position)
         val view = convertView ?: LayoutInflater.from(context).inflate(R.layout.item_registro, parent, false)
 
-        // Encontrar o TextView no layout e definir o nome do problema
         val nomeProblemaTextView = view.findViewById<TextView>(R.id.nomeProblemaTextView)
         nomeProblemaTextView.text = registro?.nomeProblema
 

@@ -49,7 +49,6 @@
             android:textSize="18sp"
             android:textStyle="bold" />
 
-        <!-- Nome do Problema -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -69,7 +68,6 @@
             android:padding="14dp"
             android:textColorHint="#757575" />
 
-        <!-- Risco -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -87,7 +85,6 @@
             android:layout_marginBottom="-10dp"
             android:layout_gravity="center_horizontal" />
 
-        <!-- Localização -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -107,7 +104,6 @@
             android:padding="14dp"
             android:textColorHint="#757575" />
 
-        <!-- Categoria -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -126,7 +122,6 @@
             android:paddingEnd="10dp"
             android:spinnerMode="dropdown" />
 
-        <!-- Descrição -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -147,7 +142,6 @@
             android:padding="14dp"
             android:textColorHint="#757575" />
 
-        <!-- Upload de Imagem -->
         <Button
             android:id="@+id/btnEscolherImagem"
             android:layout_width="match_parent"
@@ -157,8 +151,6 @@
             android:text="Anexar Foto"
             android:textColor="#000000" />
 
-
-        <!-- Botão de Envio -->
         <Button
             android:id="@+id/btnEnviar"
             android:layout_width="match_parent"

@@ -6,23 +6,36 @@ import android.widget.Button
 import android.widget.ListView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+
 
 class InicialActivity : AppCompatActivity() {
 
     private val db = FirebaseFirestore.getInstance()
+    private lateinit var swipeRefresh: SwipeRefreshLayout
+    private lateinit var registroListView: ListView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        val currentUser = FirebaseAuth.getInstance().currentUser
+        if (currentUser == null) {
+            startActivity(Intent(this, LoginActivity::class.java))
+            finish()
+            return
+        }
+
         setContentView(R.layout.activity_inicial)
 
+        swipeRefresh = findViewById(R.id.swipeRefresh)
+        registroListView = findViewById(R.id.registroListView)
         val addRegistroButton = findViewById<Button>(R.id.addRegistroButton)
-        val registroListView = findViewById<ListView>(R.id.registroListView)
-        val debugButton = findViewById<Button>(R.id.debugButton)
+        val btnLogout = findViewById<Button>(R.id.btnLogout)
 
-        debugButton.setOnClickListener {
-            Toast.makeText(this, "Atualizando registros...", Toast.LENGTH_SHORT).show()
-            carregarRegistros(registroListView)
+        swipeRefresh.setOnRefreshListener {
+            carregarRegistros()
         }
 
         addRegistroButton.setOnClickListener {
@@ -30,10 +43,18 @@ class InicialActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
-        carregarRegistros(registroListView)
+        btnLogout.setOnClickListener {
+            FirebaseAuth.getInstance().signOut()
+            startActivity(Intent(this, LoginActivity::class.java))
+            finish()
+        }
+
+        carregarRegistros()
     }
 
-    private fun carregarRegistros(registroListView: ListView) {
+    private fun carregarRegistros() {
+        swipeRefresh.isRefreshing = true
+
         db.collection("registro_riscos")
             .get()
             .addOnSuccessListener { result ->
@@ -55,21 +76,23 @@ class InicialActivity : AppCompatActivity() {
 
                 registroListView.setOnItemClickListener { _, _, position, _ ->
                     val registro = registros[position]
-                    val intent = Intent(this, DetalheRegistroActivity::class.java)
-
-                    intent.putExtra("nomeProblema", registro.nomeProblema)
-                    intent.putExtra("descricao", registro.descricao)
-                    intent.putExtra("fotoUrl", registro.fotoUrl)
-                    intent.putExtra("localizacao", registro.localizacao)
-                    intent.putExtra("categoria", registro.categoria)
-                    intent.putExtra("status", registro.status)
-                    intent.putExtra("classificacao", registro.classificacao)
-
+                    val intent = Intent(this, DetalheRegistroActivity::class.java).apply {
+                        putExtra("nomeProblema", registro.nomeProblema)
+                        putExtra("descricao", registro.descricao)
+                        putExtra("fotoUrl", registro.fotoUrl)
+                        putExtra("localizacao", registro.localizacao)
+                        putExtra("categoria", registro.categoria)
+                        putExtra("status", registro.status)
+                        putExtra("classificacao", registro.classificacao)
+                    }
                     startActivity(intent)
                 }
+
+                swipeRefresh.isRefreshing = false
             }
             .addOnFailureListener { e ->
                 Toast.makeText(this, "Erro ao carregar os registros: $e", Toast.LENGTH_SHORT).show()
+                swipeRefresh.isRefreshing = false
             }
     }
 }

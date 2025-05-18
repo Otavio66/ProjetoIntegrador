@@ -6,25 +6,11 @@
     android:padding="16dp"
     android:background="#FFFFFF">
 
-    <Button
-        android:id="@+id/debugButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Atualizar Dados (Debug)"
-        android:layout_marginTop="16dp"
-        android:backgroundTint="#44FF44"
-        android:textColor="#000000"/>
-
-    <LinearLayout
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipeRefresh"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
-        android:orientation="vertical"
-        android:padding="8dp"
-        android:background="@drawable/rounded_bg_gray"
-        android:elevation="4dp"
-        android:layout_marginTop="16dp"
-        android:clipToPadding="false">
+        android:layout_weight="1">
 
         <ListView
             android:id="@+id/registroListView"
@@ -32,8 +18,8 @@
             android:layout_height="match_parent"
             android:dividerHeight="8dp"
             android:padding="8dp"
-            android:background="@drawable/rounded_bg"/>
-    </LinearLayout>
+            android:background="@drawable/rounded_bg" />
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
     <Button
         android:id="@+id/addRegistroButton"
@@ -42,6 +28,15 @@
         android:text="Adicionar um novo registro"
         android:layout_marginTop="16dp"
         android:backgroundTint="#D3D3D3"
-        android:textColor="#000000"/>
+        android:textColor="#000000" />
+
+    <Button
+        android:id="@+id/btnLogout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Sair"
+        android:layout_marginTop="8dp"
+        android:backgroundTint="#FF4444"
+        android:textColor="#FFFFFF" />
 
 </LinearLayout>

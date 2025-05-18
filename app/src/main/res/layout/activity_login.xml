@@ -32,12 +32,12 @@
             android:textColor="#000000"/>
 
         <EditText
-            android:id="@+id/etIdentificacao"
+            android:id="@+id/etEmail"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="12dp"
             android:background="@drawable/rounded_input"
-            android:hint="@string/identificacao"
+            android:hint="@string/email"
             android:inputType="textPersonName"
             android:autofillHints="username"
             android:paddingTop="14dp"
@@ -104,16 +104,5 @@
 
     </LinearLayout>
 
-    <TextView
-        android:id="@+id/tvDebugRegistrar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="16dp"
-        android:text="Debug MainActivity"
-        android:textColor="#FF0000"
-        android:textStyle="bold"
-        android:clickable="true"
-        android:focusable="true"/>
 
 </LinearLayout>

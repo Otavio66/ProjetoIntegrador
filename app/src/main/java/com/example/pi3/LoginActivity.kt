@@ -20,6 +20,13 @@ class LoginActivity : AppCompatActivity() {
         setContentView(R.layout.activity_login)
 
         auth = FirebaseAuth.getInstance()
+        val user = auth.currentUser
+        if (user != null) {
+            startActivity(Intent(this, InicialActivity::class.java))
+            finish()
+            return
+        }
+        setContentView(R.layout.activity_login)
 
         val db: FirebaseFirestore = FirebaseFirestore.getInstance()
         val testeData = hashMapOf(
@@ -40,11 +47,12 @@ class LoginActivity : AppCompatActivity() {
         tvCadastrar.setOnClickListener {
             val intent = Intent(this, CadastroActivity::class.java)
             startActivity(intent)
+            finish() // opcional — remove a LoginActivity da pilha
         }
 
         val btnLogin = findViewById<Button>(R.id.btnEntrar)
         btnLogin.setOnClickListener {
-            val email = findViewById<EditText>(R.id.etIdentificacao).text.toString()
+            val email = findViewById<EditText>(R.id.etEmail).text.toString()
             val senha = findViewById<EditText>(R.id.etSenha).text.toString()
 
             if (email.isEmpty() || senha.isEmpty()) {
@@ -65,11 +73,22 @@ class LoginActivity : AppCompatActivity() {
                     }
             }
         }
+        val tvEsqueciSenha = findViewById<TextView>(R.id.tvEsqueciSenha)
+        tvEsqueciSenha.setOnClickListener {
+            val email = findViewById<EditText>(R.id.etEmail).text.toString()
 
-        val tvDebug = findViewById<TextView>(R.id.tvDebugRegistrar)
-        tvDebug.setOnClickListener {
-            val intent = Intent(this, InicialActivity::class.java)
-            startActivity(intent)
+            if (email.isEmpty()) {
+                Toast.makeText(this, "Digite seu e-mail para redefinir a senha.", Toast.LENGTH_SHORT).show()
+            } else {
+                auth.sendPasswordResetEmail(email)
+                    .addOnCompleteListener { task ->
+                        if (task.isSuccessful) {
+                            Toast.makeText(this, "Email de redefinição enviado!", Toast.LENGTH_SHORT).show()
+                        } else {
+                            Toast.makeText(this, "Erro ao enviar email: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+            }
         }
     }
 }

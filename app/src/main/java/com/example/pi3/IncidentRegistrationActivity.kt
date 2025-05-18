@@ -92,16 +92,6 @@ class IncidentRegistrationActivity : AppCompatActivity() {
                 }
                 builder.show()
             }
-
-
-            debugLogin.setOnClickListener {
-                startActivity(Intent(this, LoginActivity::class.java))
-            }
-
-            debugMain.setOnClickListener {
-                startActivity(Intent(this, InicialActivity::class.java))
-            }
-
             checkLocationPermissionAndGetLocation(etLocalizacao)
 
             btnEnviar.setOnClickListener {

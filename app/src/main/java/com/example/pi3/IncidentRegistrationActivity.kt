@@ -68,8 +68,12 @@ class IncidentRegistrationActivity : AppCompatActivity() {
             val ratingRisco = findViewById<RatingBar>(R.id.ratingRisco)
             val spinnerCategoria = findViewById<Spinner>(R.id.spinnerCategoria)
             val btnEscolherImagem = findViewById<Button>(R.id.btnEscolherImagem)
-            val debugLogin = findViewById<TextView>(R.id.debugLogin)
-            val debugMain = findViewById<TextView>(R.id.debugMain)
+            val btnVoltar = findViewById<Button>(R.id.btnVoltar)
+
+            findViewById<Button>(R.id.btnVoltar).setOnClickListener {
+                startActivity(Intent(this, InicialActivity::class.java))
+                finish()
+            }
 
             ArrayAdapter.createFromResource(
                 this,

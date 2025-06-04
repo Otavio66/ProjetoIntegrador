@@ -1,6 +1,8 @@
 package com.example.pi3
 
+import android.content.Intent
 import android.os.Bundle
+import android.widget.Button
 import android.widget.ImageView
 import android.widget.RatingBar
 import android.widget.TextView
@@ -12,6 +14,11 @@ class DetalheRegistroActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_detalhe_registro)
+
+        findViewById<Button>(R.id.btnVoltar).setOnClickListener {
+            startActivity(Intent(this, InicialActivity::class.java))
+            finish()
+        }
 
         val nomeProblemaTextView = findViewById<TextView>(R.id.incident_title)
         val fotoImageView = findViewById<ImageView>(R.id.incident_image)

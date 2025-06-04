@@ -23,6 +23,7 @@ import java.io.File
 import java.util.*
 import android.content.pm.PackageManager
 import android.app.AlertDialog
+import com.google.firebase.Timestamp
 
 class IncidentRegistrationActivity : AppCompatActivity() {
 
@@ -39,7 +40,6 @@ class IncidentRegistrationActivity : AppCompatActivity() {
         }
     }
 
-
     private val galleryResult = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
         if (uri != null) {
             imageUri = uri
@@ -55,7 +55,6 @@ class IncidentRegistrationActivity : AppCompatActivity() {
         }
     }
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         try {
@@ -68,7 +67,6 @@ class IncidentRegistrationActivity : AppCompatActivity() {
             val ratingRisco = findViewById<RatingBar>(R.id.ratingRisco)
             val spinnerCategoria = findViewById<Spinner>(R.id.spinnerCategoria)
             val btnEscolherImagem = findViewById<Button>(R.id.btnEscolherImagem)
-            val btnVoltar = findViewById<Button>(R.id.btnVoltar)
 
             findViewById<Button>(R.id.btnVoltar).setOnClickListener {
                 startActivity(Intent(this, InicialActivity::class.java))
@@ -116,7 +114,8 @@ class IncidentRegistrationActivity : AppCompatActivity() {
                     "localizacao" to localizacao,
                     "categoria" to categoria,
                     "descricao" to descricao,
-                    "status" to "Ativo"
+                    "status" to "Ativo",
+                    "createdAt" to Timestamp.now()
                 )
 
                 if (::imageUri.isInitialized) {
@@ -154,8 +153,16 @@ class IncidentRegistrationActivity : AppCompatActivity() {
     private fun salvarNoFirestore(riscoData: HashMap<String, Any>) {
         db.collection("registro_riscos")
             .add(riscoData)
-            .addOnSuccessListener {
+            .addOnSuccessListener { documentReference ->
                 Toast.makeText(this, "Risco registrado com sucesso!", Toast.LENGTH_LONG).show()
+
+                val broadcastIntent = Intent("com.meuapp.ARQUIVO_OCORRENCIA_REGISTRADA").apply {
+                    putExtra("docId", documentReference.id)
+                    putExtra("categoria", riscoData["categoria"].toString())
+                    putExtra("nomeProblema", riscoData["nomeProblema"].toString())
+                }
+                sendBroadcast(broadcastIntent)
+
                 finish()
             }
             .addOnFailureListener { e ->
@@ -205,7 +212,6 @@ class IncidentRegistrationActivity : AppCompatActivity() {
             }
         }
     }
-
 
     private fun getLocation(etLocalizacao: EditText) {
         try {
@@ -267,7 +273,6 @@ class IncidentRegistrationActivity : AppCompatActivity() {
         cameraResult.launch(intent)
     }
 
-
     private fun showErrorDialog(title: String, message: String) {
         AlertDialog.Builder(this)
             .setTitle(title)
@@ -279,16 +284,13 @@ class IncidentRegistrationActivity : AppCompatActivity() {
             .show()
     }
 
-    // Função para atualizar documentos existentes e adicionar o campo 'status'
     private fun adicionarStatusAosDocumentosExistentes() {
         db.collection("registro_riscos")
-            .get() // Obtém todos os documentos da coleção
+            .get()
             .addOnSuccessListener { result ->
                 for (document in result) {
-                    // Verifica se o campo 'status' não existe no documento
                     if (!document.contains("status")) {
                         val documentId = document.id
-                        // Atualiza o documento com o campo 'status' e valor 'ativo'
                         db.collection("registro_riscos").document(documentId)
                             .update("status", "Ativo")
                             .addOnSuccessListener {
